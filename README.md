@@ -71,7 +71,12 @@ interpreter: <the path to the active interpreter>
 Each line is a label, a colon, and the value. Command substitution from the lecture's "Shell Variables and Timestamps" card builds a labelled line from a command's output, and `>` starts the file while `>>` adds to it:
 
 ```bash
+# My code below:
 echo "python: $(python3 --version)" > output/environment.txt
+
+echo "numpy: $(python3 -c "import numpy as np; print(np.__version__)")" >> output/environment.txt
+
+echo "interpreter: $(python3 -c "import sys; print(sys.executable)")" >> output/environment.txt
 ```
 
 Lecture 03 gives the one-line Python commands that print the installed NumPy version and the interpreter path. Quotes inside `$( )` belong to the command inside it, so a `python3 -c "..."` command goes inside `echo "numpy: $(...)"` unchanged.
@@ -87,6 +92,12 @@ Build both answers with a shell pipeline (`tail`, `cut`, `sort`, `uniq -c`, `wc 
 
 Save the count of patient records to `output/record_count.txt`. The header line is not a patient record, so drop it before counting.
 
+```text
+# My code below
+tail -n +2 ~/ds217-26f-03/data/bp_readings.csv   | cut -d',' -f1 | sort | uniq -c | wc -l > "
+output/record_count.txt"
+```
+
 > **Checkpoint: `output/record_count.txt`**
 > Holds the number of patient rows in `data/bp_readings.csv`. The checks read the first number in the file and the first number on its last line, so a bare count, a count with a word after it, and a title line above the count all work. Counting the whole CSV counts the header too, which is one too many.
 
@@ -96,6 +107,10 @@ Count the patients per monitor and save the result under a name carrying the run
 
 ```text
 output/monitor_counts_YYYYMMDD_HHMMSS.txt
+
+# My code below.
+timestamp=$(date +"%Y-%m-%d_%H-%M-%S")
+tail -n +2 ~/ds217-26f-03/data/bp_readings.csv   | cut -d',' -f2 | sort | uniq -c > "output/monitor_counts_${timestamp}.txt"
 ```
 
 Capture the timestamp once into a shell variable and use it in the filename; the lecture's "Shell Variables and Timestamps" reference card gives the `date` format string that produces `YYYYMMDD_HHMMSS`, and Demo 1.7's `count_clinics.sh` saves its counts under a timestamped name the same way. Demo 1.6's script ends its pipeline with `| head -n 5` to keep its display short, but this file has six monitors, so leave that stage off or the last monitor goes missing.
